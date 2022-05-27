@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
-import * as bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/users.model';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class AuthService {
 
     if (candidate) {
       throw new HttpException(
-        'Пользователь с таким Email существует',
+        'Пользователь с таким Email уже существует',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -40,6 +40,10 @@ export class AuthService {
     });
 
     return this.generateToken(user);
+  }
+
+  async refresh(refreshStr: string) {
+    
   }
 
   private async generateToken(user: User) {
