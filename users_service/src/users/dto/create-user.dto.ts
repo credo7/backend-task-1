@@ -5,8 +5,8 @@ export class CreateUserDto {
     example: 'vitaly.credo@gmail.com',
     description: 'Почтовый адрес',
   })
-  readonly email: string;
+  readonly email!: string;
 
   @ApiProperty({ example: 'qwerty123', description: 'Пароль пользователя' })
-  readonly password: string;
+  readonly password!: string;
 }

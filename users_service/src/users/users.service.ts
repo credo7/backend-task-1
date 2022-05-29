@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './users.model';
@@ -20,5 +20,22 @@ export class UsersService {
   async getUserByEmail(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
     return user;
+  }
+
+  async findOne(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new HttpException('Not found', HttpStatus.BAD_REQUEST);
+    return user;
+  }
+
+  async updateUserEmail(id: number, newEmail: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    user.email = newEmail;
+    user.save();
+    return user;
+  }
+
+  async removeUser(id: number) {
+    this.userRepository.destroy({ where: { id } });
   }
 }
