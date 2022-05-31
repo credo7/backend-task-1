@@ -8,7 +8,7 @@ interface UserCreationAttrs {
 
 @Table({ tableName: 'users' })
 export class User extends Model<User, UserCreationAttrs> {
-  @ApiProperty({ example: '1', description: 'Уникальный индефикатор' })
+  @ApiProperty({ example: '1', description: 'Unique id' })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -17,7 +17,7 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   id: number;
 
-  @ApiProperty({ example: 'vitaly.credo@gmail.com', description: 'Уникальный email' })
+  @ApiProperty({ example: 'vitaly.credo@gmail.com', description: 'Unique email' })
   @Column({
     type: DataType.STRING,
     unique: true,
@@ -25,10 +25,17 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   email: string;
 
-  @ApiProperty({ example: 'qwerty123', description: 'Пароль пользователя' })
+  @ApiProperty({ example: 'qwerty123', description: 'User password' })
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   password: string;
+
+  @ApiProperty({ example: 'saieroskfaj435sofk', description: 'Hashed RefreshToken' })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  hashRefreshToken: string;
 }

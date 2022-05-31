@@ -19,7 +19,12 @@ export class AuthService {
 
   async login(userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
-    return this.generateToken(user);
+    const tokens = await this.getTokens(user);
+    await this.usersService.setCurrentRefreshToken(
+      user.id,
+      tokens.refreshToken,
+    );
+    return tokens;
   }
 
   async registration(userDto: CreateUserDto) {
@@ -39,19 +44,37 @@ export class AuthService {
       password: hashPassword,
     });
 
-    return this.generateToken(user);
+    const tokens = await this.getTokens(user);
+
+    await this.usersService.setCurrentRefreshToken(
+      user.id,
+      tokens.refreshToken,
+    );
+
+    return tokens;
   }
 
-  async refresh(refreshStr: string) {
-    
-  }
+  async refresh(id: number, oldRefreshToken) {
+    const user = await this.usersService.findOne(id);
 
-  private async generateToken(user: User) {
-    const payload = { email: user.email, id: user.id };
+    const isRefreshTokenMatching = await bcrypt.compare(
+      oldRefreshToken,
+      user.hashRefreshToken,
+    );
 
-    return {
-      token: this.jwtService.sign(payload),
-    };
+    const isValid = await this.jwtService.verify(oldRefreshToken, {
+      secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+    });
+
+    if (user && isRefreshTokenMatching && isValid) {
+      const tokens = await this.getTokens(user);
+
+      this.usersService.setCurrentRefreshToken(user.id, tokens.refreshToken);
+
+      return tokens;
+    }
+
+    throw new HttpException('Incorrect refreshToken', HttpStatus.BAD_REQUEST);
   }
 
   private async validateUser(userDto: CreateUserDto) {
@@ -69,5 +92,24 @@ export class AuthService {
     throw new UnauthorizedException({
       message: 'Некорректный email или пароль',
     });
+  }
+
+  private async getTokens(user: User) {
+    const payload = { id: user.id, email: user.email };
+
+    const accessToken = await this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+      expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}s`,
+    });
+
+    const refreshToken = await this.jwtService.sign(
+      {},
+      {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME}s`,
+      },
+    );
+
+    return { accessToken, refreshToken };
   }
 }
