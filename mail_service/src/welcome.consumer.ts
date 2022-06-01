@@ -15,8 +15,13 @@ export class WelcomeConsumer implements OnModuleInit {
       {
         eachMessage: async ({ message }) => {
           this.mailService.sendUserWelcome(message.value.toString());
+          await sleep(1000);
         },
       },
     );
   }
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
