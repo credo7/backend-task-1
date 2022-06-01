@@ -3,12 +3,11 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { ProducerService } from 'src/kafka/producer.service';
-import { UsersService } from 'src/users/users.service';
+import { KafkaModule } from 'src/kafka/kafka.module';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, ProducerService, UsersService],
+  providers: [AuthService],
   imports: [
     forwardRef(() => UsersModule),
     JwtModule.register({
@@ -17,8 +16,7 @@ import { UsersService } from 'src/users/users.service';
         expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}s`,
       },
     }),
-    ProducerService,
-    UsersService
+    KafkaModule,
   ],
   exports: [AuthService, JwtModule],
 })

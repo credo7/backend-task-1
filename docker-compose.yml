@@ -32,6 +32,7 @@ services:
       - ${USERS_SERVICE_PORT}:${USERS_SERVICE_PORT}
     depends_on:
       - users_db
+      - kafka
   tasks_db:
     container_name: tasks_db
     image: postgres:11.13
@@ -63,7 +64,7 @@ services:
     ports:
       - ${TASKS_SERVICE_PORT}:${TASKS_SERVICE_PORT}
     depends_on:
-      - users_db
+      - tasks_db
   mail_service:
     container_name: mail_service
     build: ./mail_service
@@ -76,6 +77,8 @@ services:
       - PORT=${MAIL_SERVICE_PORT}
     ports:
       - ${MAIL_SERVICE_PORT}:${MAIL_SERVICE_PORT}
+    depends_on:
+      - kafka
   zookeeper:
     image: wurstmeister/zookeeper
     container_name: zookeeper
@@ -88,7 +91,7 @@ services:
     container_name: kafka
     ports:
     - 9092:9092
+    hostname: 'kafka-internal.io'
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ADVERTISED_HOST_NAME: kafka-internal.io
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092

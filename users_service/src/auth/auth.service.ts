@@ -26,14 +26,6 @@ export class AuthService {
       user.id,
       tokens.refreshToken,
     );
-    await this.producerService.produce({
-      topic: 'registration',
-      messages: [
-        {
-          value: userDto.email,
-        },
-      ],
-    });
     return tokens;
   }
 
@@ -60,6 +52,15 @@ export class AuthService {
       user.id,
       tokens.refreshToken,
     );
+
+    await this.producerService.produce({
+      topic: 'registration',
+      messages: [
+        {
+          value: userDto.email,
+        },
+      ],
+    });
 
     return tokens;
   }

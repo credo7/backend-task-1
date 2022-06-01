@@ -17,7 +17,10 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   id: number;
 
-  @ApiProperty({ example: 'vitaly.credo@gmail.com', description: 'Unique email' })
+  @ApiProperty({
+    example: 'vitaly.credo@gmail.com',
+    description: 'Unique email',
+  })
   @Column({
     type: DataType.STRING,
     unique: true,
@@ -32,7 +35,10 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   password: string;
 
-  @ApiProperty({ example: 'saieroskfaj435sofk', description: 'Hashed RefreshToken' })
+  @ApiProperty({
+    example: 'saieroskfaj435sofk',
+    description: 'Hashed RefreshToken',
+  })
   @Column({
     type: DataType.STRING,
     allowNull: true,

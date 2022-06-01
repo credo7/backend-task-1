@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -43,7 +54,7 @@ export class TasksController {
   }
 
   @ApiOperation({ summary: 'Удалить задачу по id' })
-  @ApiResponse({ status: 204})
+  @ApiResponse({ status: 204 })
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)

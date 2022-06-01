@@ -6,6 +6,8 @@
 /tasks_db
 /users_db
 
+#env files
+
 # Logs
 logs
 *.log

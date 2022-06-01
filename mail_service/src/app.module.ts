@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { WelcomeConsumer } from './consumers/welcome.consumer';
+import { WelcomeConsumer } from './welcome.consumer';
 import { KafkaModule } from './kafka/kafka.module';
 import { MailModule } from './mail/mail.module';
 
