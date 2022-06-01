@@ -7,14 +7,16 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/users.model';
+import { ProducerService } from 'src/kafka/producer.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private producerService: ProducerService,
   ) {}
 
   async login(userDto: CreateUserDto) {
@@ -24,6 +26,14 @@ export class AuthService {
       user.id,
       tokens.refreshToken,
     );
+    await this.producerService.produce({
+      topic: 'registration',
+      messages: [
+        {
+          value: userDto.email,
+        },
+      ],
+    });
     return tokens;
   }
 
@@ -32,7 +42,7 @@ export class AuthService {
 
     if (candidate) {
       throw new HttpException(
-        'Пользователь с таким Email уже существует',
+        'User with this email address already exists',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -80,17 +90,23 @@ export class AuthService {
   private async validateUser(userDto: CreateUserDto) {
     const user = await this.usersService.getUserByEmail(userDto.email);
 
+    if (!user) {
+      throw new UnauthorizedException({
+        message: 'User is not found',
+      });
+    }
+
     const passwordEquals = await bcrypt.compare(
       userDto.password,
       user.password,
     );
 
-    if (user && passwordEquals) {
+    if (passwordEquals) {
       return user;
     }
 
     throw new UnauthorizedException({
-      message: 'Некорректный email или пароль',
+      message: 'Incorrect password',
     });
   }
 

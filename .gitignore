@@ -2,6 +2,10 @@
 */dist
 */node_modules
 
+#Databases
+tasks_db
+users_db
+
 # Logs
 logs
 *.log

@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { WelcomeConsumer } from './consumers/welcome.consumer';
+import { KafkaModule } from './kafka/kafka.module';
 import { MailModule } from './mail/mail.module';
 
 @Module({
@@ -8,8 +10,8 @@ import { MailModule } from './mail/mail.module';
       envFilePath: '.env',
     }),
     MailModule,
+    KafkaModule,
   ],
-  controllers: [],
-  providers: [],
+  providers: [WelcomeConsumer],
 })
 export class AppModule {}

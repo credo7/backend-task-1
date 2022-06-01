@@ -1,0 +1,94 @@
+version: '3'
+services:
+  users_db:
+    container_name: users_db
+    image: postgres:11.13
+    environment:
+      - POSTGRES_USER=${USERS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${USERS_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${USERS_POSTGRES_DB}
+      - TZ=Europe/Moscow
+      - PGTZ=Europe/Moscow
+    volumes:
+      - ./users_db/data:/var/lib/postgresql/data
+    ports:
+      - ${USERS_POSTGRES_PORT}:5432
+    command: postgres -c stats_temp_directory=/tmp
+  users_service:
+    container_name: users_service
+    build: ./users_service
+    environment:
+      - PORT=${USERS_SERVICE_PORT}
+      - POSTGRES_HOST=${USERS_POSTGRES_HOST}
+      - POSTGRES_USER=${USERS_POSTGRES_USER}
+      - POSTGRES_DB=${USERS_POSTGRES_DB}
+      - POSTGRES_PASSWORD=${USERS_POSTGRES_PASSWORD}
+      - POSTGRES_PORT=5432
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRATION_TIME=${JWT_ACCESS_TOKEN_EXPIRATION_TIME}
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - JWT_REFRESH_TOKEN_EXPIRATION_TIME=${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
+    ports:
+      - ${USERS_SERVICE_PORT}:${USERS_SERVICE_PORT}
+    depends_on:
+      - users_db
+  tasks_db:
+    container_name: tasks_db
+    image: postgres:11.13
+    environment:
+      - POSTGRES_USER=${TASKS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TASKS_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${TASKS_POSTGRES_DB}
+      - TZ=Europe/Moscow
+      - PGTZ=Europe/Moscow
+    volumes:
+      - ./tasks_db/data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    command: postgres -c stats_temp_directory=/tmp
+  tasks_service:
+    container_name: tasks_service
+    build: ./tasks_service
+    environment:
+      - PORT=${TASKS_SERVICE_PORT}
+      - POSTGRES_HOST=${TASKS_POSTGRES_HOST}
+      - POSTGRES_USER=${TASKS_POSTGRES_USER}
+      - POSTGRES_DB=${TASKS_POSTGRES_DB}
+      - POSTGRES_PASSWORD=${TASKS_POSTGRES_PASSWORD}
+      - POSTGRES_PORT=5432
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRATION_TIME=${JWT_ACCESS_TOKEN_EXPIRATION_TIME}
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - JWT_REFRESH_TOKEN_EXPIRATION_TIME=${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
+    ports:
+      - ${TASKS_SERVICE_PORT}:${TASKS_SERVICE_PORT}
+    depends_on:
+      - users_db
+  mail_service:
+    container_name: mail_service
+    build: ./mail_service
+    environment:
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - PORT=${MAIL_SERVICE_PORT}
+    ports:
+      - ${MAIL_SERVICE_PORT}:${MAIL_SERVICE_PORT}
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+    - 2181:2181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+    - 9092:9092
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092

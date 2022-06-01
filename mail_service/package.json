@@ -34,6 +34,7 @@
     "handlebars": "^4.7.7",
     "nodemailer": "^6.7.5",
     "pg": "^8.7.3",
+    "kafkajs": "^1.15.0",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

@@ -5,12 +5,12 @@ import { User } from './users.model';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@ApiTags('Пользователи')
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Получить всех пользователей' })
+  @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [User] })
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -18,7 +18,7 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
-  @ApiOperation({ summary: 'Получить юзера по id' })
+  @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({ status: 200, type: User })
   @Get(':id')
   @UseGuards(JwtAuthGuard)
@@ -26,7 +26,7 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @ApiOperation({ summary: 'Изменить email по id' })
+  @ApiOperation({ summary: 'Change email by id' })
   @ApiResponse({ status: 200, type: User })
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
@@ -34,7 +34,7 @@ export class UsersController {
     return this.usersService.updateUserEmail(+id, userDto.email);
   }
 
-  @ApiOperation({ summary: 'Удалить юзера по id' })
+  @ApiOperation({ summary: 'Delete user by id' })
   @ApiResponse({ status: 204})
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
